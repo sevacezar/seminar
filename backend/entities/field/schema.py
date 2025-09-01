@@ -2,6 +2,7 @@
 Pydantic схемы для сущности Месторождение (Field)
 """
 from typing import Optional
+
 from backend.shared.base_schema import BaseCreateSchema, BaseUpdateSchema, BaseResponseSchema
 
 

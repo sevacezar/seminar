@@ -2,6 +2,7 @@
 Сервис для работы с месторождениями
 """
 from typing import Optional, List, Dict, Any
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 

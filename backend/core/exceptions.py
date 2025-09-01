@@ -2,6 +2,7 @@
 Пользовательские исключения приложения
 """
 from typing import Any, Dict, Optional
+
 from fastapi import HTTPException, status
 
 

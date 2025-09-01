@@ -2,6 +2,7 @@
 Главный модуль FastAPI приложения для анализа добычи
 """
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 

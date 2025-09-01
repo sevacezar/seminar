@@ -2,6 +2,7 @@
 Настройка базы данных SQLAlchemy
 """
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+
 from .config import settings
 from .logging import get_logger
 from .base import Base

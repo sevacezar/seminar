@@ -2,8 +2,10 @@
 Зависимости FastAPI
 """
 from typing import AsyncGenerator
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import AsyncSessionLocal
+
+from backend.core.database import AsyncSessionLocal
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

@@ -3,6 +3,7 @@
 """
 from datetime import datetime
 from typing import Generic, List, TypeVar, Optional
+
 from pydantic import BaseModel, ConfigDict
 
 

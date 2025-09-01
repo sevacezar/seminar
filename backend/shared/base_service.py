@@ -1,15 +1,17 @@
 """
 Базовые классы для сервисов
 """
-import logging
 from typing import Generic, TypeVar, Type, List, Optional, Dict, Any
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
-from backend.core.exceptions import NotFoundError, AlreadyExistsError, ValidationError
+
+from backend.core.exceptions import NotFoundError, ValidationError
+from backend.core.logging import get_logger
 from backend.shared.base_model import BaseModel
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 # Типы для generic классов
 ModelType = TypeVar("ModelType", bound=BaseModel)
