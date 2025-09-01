@@ -11,7 +11,7 @@ class Settings:
     DEBUG: bool = True
     
     # База данных
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/production_analysis"
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/prod_analysis"
     
     # Логирование
     LOG_LEVEL: str = "INFO"
