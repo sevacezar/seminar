@@ -1,0 +1,193 @@
+ОПЕРАЦИИ НАД МОДЕЛЯМИ ОБЪЕКТОВ
+
+1. Месторождение (Field)
+    1) Добавить новое месторождение
+        Метод: POST
+        URL: /api/fields
+        Тело: {'name': "string", 'operator': "string"}
+        Ответ:
+            201 Created: {'id': 1, 'name': "Месторождение А", 'operator': "Оператор А", 'created_at': "2024-01-01T12:00:00Z"}
+            400 Bad Request: {'error': 'validation_error', 'message': 'Name is required', 'details': {...}}
+            409 Conflict: {'error': 'already_exists', 'message': 'Field with this name already exists'}
+            500 Internal Server Error: {'error': 'internal_error', 'message': 'Database connection failed'} 
+    2) Получить все месторождения
+        Метод: GET
+        URL: /api/fields
+        Тело: -
+        Параметры запроса: {operator: "string", name: "string", limit: 100, offset: 0}
+        Ответ:
+            200 OK: {'data': [{'id': 1, 'name': "Месторождение А", 'operator': "Газпром"}], 'total': 1, 'limit': 100, 'offset': 0}
+            400 Bad Request: {'error': 'validation_error', 'message': 'Invalid query parameters'}
+            500 Internal Server Error: {'error': 'internal_error', 'message': 'Database connection failed'}
+    3) Получить одно месторождение
+        Метод: GET
+        URL: /api/fields/{id}
+        Тело: -
+        Ответ:
+            200 OK: {'id': 1, 'name': "Месторождение А", 'operator': "Газпром", 'created_at': "2024-01-01T12:00:00Z"}
+            404 Not Found: {'error': 'not_found', 'message': 'Field not found'}
+            500 Internal Server Error: {'error': 'internal_error', 'message': 'Database connection failed'}
+    4) Обновить параметры месторождения частично
+        Метод: PATCH
+        URL: /api/fields/{id}
+        Тело: {"name": "string", "operator": "string"}
+        Ответ:
+            200 OK: {'id': 1, 'name': "Новое название", 'operator': "Газпром", 'updated_at': "2024-01-01T12:00:00Z"}
+            400 Bad Request: {'error': 'validation_error', 'message': 'Invalid field data'}
+            404 Not Found: {'error': 'not_found', 'message': 'Field not found'}
+            409 Conflict: {'error': 'already_exists', 'message': 'Field with this name already exists'}
+            500 Internal Server Error: {'error': 'internal_error', 'message': 'Database connection failed'}
+    5) Удалить месторождение
+        Метод: DELETE
+        URL: /api/fields/{id}
+        Ответ:
+            204 No Content: (пустое тело)
+            404 Not Found: {'error': 'not_found', 'message': 'Field not found'}
+            409 Conflict: {'error': 'dependency_exists', 'message': 'Cannot delete field with existing development objects'}
+            500 Internal Server Error: {'error': 'internal_error', 'message': 'Database connection failed'}
+
+2. Объект разработки (Development Object)
+    1) Добавить новый объект разработки
+        Метод: POST
+        URL: /api/development-objects
+        Тело: {'name': "string", 'field_id': 1, 'sediment_complex': "string"}
+        Ответ:
+            201 Created: {'id': 1, 'name': "Объект А", 'field_id': 1, 'sediment_complex': "Сеноман"}
+            400 Bad Request: {'error': 'validation_error', 'message': 'Invalid data'}
+            404 Not Found: {'error': 'not_found', 'message': 'Field not found'}
+    2) Получить все объекты разработки
+        Метод: GET
+        URL: /api/development-objects
+        Тело: -
+        Параметры запроса: {field_id: 1, sediment_complex: "string", limit: 100, offset: 0}
+        Ответ:
+            200 OK: {'data': [...], 'total': 10, 'limit': 100, 'offset': 0}
+    3) Получить один объект разработки
+        Метод: GET
+        URL: /api/development-objects/{id}
+        Тело: -
+        Ответ:
+            200 OK: {'id': 1, 'name': "Объект А", 'field_id': 1, 'sediment_complex': "Сеноман"}
+            404 Not Found: {'error': 'not_found', 'message': 'Development object not found'}
+    4) Обновить параметры объекта разработки частично
+        Метод: PATCH
+        URL: /api/development-objects/{id}
+        Тело: {"name": "string", "sediment_complex": "string"}
+        Ответ:
+            200 OK: {'id': 1, 'name': "Новое имя", 'field_id': 1, 'sediment_complex': "Сеноман"}
+            404 Not Found: {'error': 'not_found', 'message': 'Development object not found'}
+    5) Удалить объект разработки
+        Метод: DELETE
+        URL: /api/development-objects/{id}
+        Ответ:
+            204 No Content
+            404 Not Found: {'error': 'not_found', 'message': 'Development object not found'}
+
+3. Скважина (Well) - аналогичные коды ответов: 200/201/204/400/404/409/500
+
+4. Флюид (Fluid) - аналогичные коды ответов: 200/201/204/400/404/409/500
+
+5. Добыча (Production) - аналогичные коды ответов: 200/201/204/400/404/409/500
+
+МАССОВЫЕ ОПЕРАЦИИ (ВСЕ ИЛИ НИКАКИЕ - ТРАНЗАКЦИОННО)
+
+1. Массовая вставка месторождений
+    Метод: POST
+    URL: /api/fields/bulk
+    Тело: [{'name': "string", 'operator': "string"}, ...]
+    Ответ:
+        201 Created: {'created': 5, 'total': 5, 'ids': [1,2,3,4,5], 'processing_time_ms': 1250}
+        400 Bad Request: {'error': 'validation_error', 'message': 'Error at row 3: Name is required', 'details': {'row': 3, 'data': {...}}}
+        409 Conflict: {'error': 'already_exists', 'message': 'Field with name "Test Field" already exists'}
+        500 Internal Server Error: {'error': 'internal_error', 'message': 'Database connection failed'}
+
+2. Массовая вставка объектов разработки
+    Метод: POST
+    URL: /api/development-objects/bulk
+    Тело: [{'name': "string", 'field_id': 1, 'sediment_complex': "string"}, ...]
+    Ответ:
+        201 Created: {'created': 10, 'total': 10, 'ids': [1,2,3,4,5,6,7,8,9,10], 'processing_time_ms': 850}
+        400 Bad Request: {'error': 'validation_error', 'message': 'Error at row 5: Invalid field_id'}
+        404 Not Found: {'error': 'not_found', 'message': 'Field with id 999 not found'}
+
+3. Массовая вставка скважин
+    Метод: POST
+    URL: /api/wells/bulk
+    Тело: [{'name': "string", 'field_id': 1, 'fluid_type': "string"}, ...]
+    Ответ:
+        201 Created: {'created': 15, 'total': 15, 'ids': [1,2,3,...,15], 'processing_time_ms': 1100}
+        400 Bad Request: {'error': 'validation_error', 'message': 'Error at row 8: Invalid fluid_type'}
+
+4. Массовая вставка флюидов
+    Метод: POST
+    URL: /api/fluids/bulk
+    Тело: [{'fluid_type': "string", 'development_object_id': 1}, ...]
+    Ответ:
+        201 Created: {'created': 3, 'total': 3, 'ids': [1,2,3], 'processing_time_ms': 450}
+        400 Bad Request: {'error': 'validation_error', 'message': 'Error at row 2: Invalid development_object_id'}
+
+5. Массовая вставка записей добычи
+    Метод: POST
+    URL: /api/production/bulk
+    Тело: [{'well_id': 1, 'fluid_id': 1, 'date': "ГГГГ-ММ-ДД", 'amount': 1000.5, 'unit': "string", 'fluid_type': "gas", 'field_id': 1, 'development_object_id': 1}, ...]
+    Ответ:
+        201 Created: {'created': 1000, 'total': 1000, 'ids': [1,2,3,...,1000], 'processing_time_ms': 2500}
+        400 Bad Request: {'error': 'validation_error', 'message': 'Error at row 156: Invalid date format', 'details': {'row': 156, 'data': {...}}}
+
+ПРИНЦИП РАБОТЫ МАССОВЫХ ОПЕРАЦИЙ:
+- Все записи создаются в рамках одной транзакции
+- Если хотя бы одна запись не может быть создана, вся операция откатывается
+- Никаких частичных результатов - только полный успех или полная неудача
+- Возвращается либо 201 Created со всеми созданными ID, либо 4xx/5xx ошибка
+
+АНАЛИТИЧЕСКИЕ ОПЕРАЦИИ
+
+1. Получение динамики добычи по выбранным параметрам
+    Метод: GET
+    URL: /api/analytics/production/dynamics
+    Параметры запроса: {
+        date_from: "ГГГГ-ММ-ДД" (обязательный),
+        date_to: "ГГГГ-ММ-ДД" (обязательный, включительно),
+        fluid_type: "gas|oil|condensate" (по умолчанию: "gas"),
+        field_ids: [1,2,3...] (по умолчанию: все месторождения),
+        sediment_complexes: ["Сеноман", "Нижний мел", ...] (по умолчанию: все комплексы),
+        aggregation_step: "monthly|quarterly|yearly" (по умолчанию: "yearly")
+    }
+    Ответ:
+        200 OK: {
+            "metadata": {
+                "request": {
+                    "date_from": "2020-01-01",
+                    "date_to": "2023-12-31",
+                    "fluid_type": "gas",
+                    "field_ids": [1, 2, 3],
+                    "sediment_complexes": ["Сеноман", "Нижний мел"],
+                    "aggregation_step": "yearly"
+                },
+                "response": {
+                    "total_fields": 3,
+                    "total_periods": 4,
+                    "unit": "тыс. м³",
+                    "generated_at": "2024-01-01T12:00:00Z"
+                }
+            },
+            "reporting_dates": ["2020", "2021", "2022", "2023"],
+            "fields": [
+                {
+                    "field_id": 1,
+                    "field_name": "Месторождение А",
+                    "production_by_period": [85000, 92000, 88000, 91000],
+                },
+                {
+                    "field_id": 2,
+                    "field_name": "Месторождение Б",
+                    "production_by_period": [45000, 52000, 48000, 51000],
+                }
+            ],
+            "total": {
+                "production_by_period": [130000, 144000, 136000, 142000]
+            }
+        }
+        400 Bad Request: {'error': 'validation_error', 'message': 'date_from is required'}
+        404 Not Found: {'error': 'not_found', 'message': 'No data found for specified parameters'}
+        500 Internal Server Error: {'error': 'internal_error', 'message': 'Database connection failed'}

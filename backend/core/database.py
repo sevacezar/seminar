@@ -2,9 +2,9 @@
 Настройка базы данных SQLAlchemy
 """
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
 from .config import settings
 from .logging import get_logger
+from .base import Base
 
 logger = get_logger(__name__)
 
@@ -23,30 +23,25 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 
-class Base(DeclarativeBase):
-    """Базовый класс для всех моделей SQLAlchemy"""
-    pass
-
-
-# async def init_db():
-#     """Инициализация базы данных - создание всех таблиц"""
-#     logger.info("Initializing database")
+async def init_db():
+    """Инициализация базы данных - создание всех таблиц"""
+    logger.info("Initializing database")
     
-#     try:
-#         # Импорт всех моделей для создания таблиц
-#         from backend.entities.field.model import Field
-#         from backend.entities.development_object.model import DevelopmentObject
-#         from backend.entities.well.model import Well
-#         from backend.entities.fluid.model import Fluid
-#         from backend.entities.production.model import Production
-#     except Exception as e:
-#         logger.error(f"Error importing models: {str(e)}")
-#         raise
+    try:
+        # Импортируем все модели из централизованного модуля
+        import backend.core.models  # noqa: F401
+        logger.info("All models imported successfully")
+    except Exception as e:
+        logger.error(f"Error importing models: {str(e)}")
+        raise
     
-#     async with engine.begin() as conn:
-#         await conn.run_sync(Base.metadata.create_all)
-    
-#     logger.info("Database initialized successfully")
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database initialized successfully")
+    except Exception as e:
+        logger.error(f"Error creating database tables: {str(e)}")
+        raise
 
 
 async def get_db() -> AsyncSession:
