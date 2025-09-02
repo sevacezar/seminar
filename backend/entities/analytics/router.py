@@ -68,15 +68,17 @@ async def get_production_dynamics(
             aggregation_step=aggregation_step
         )
         
-        # Проверка наличия данных
-        if not result.fields:
-            raise not_found_exception("No data found for specified parameters")
-        
+        # Возвращаем результат даже если данных нет (пустой список)
+        # Фронтенд сам обработает отсутствие данных
         return result
         
     except ValidationError as e:
         logger.warning(f"Validation error in production dynamics: {str(e)}")
         raise validation_exception(str(e))
     except Exception as e:
+        # Проверяем, не является ли это ошибкой валидации, завернутой в исключение
+        if "validation_error" in str(e) or "date_from must be less than" in str(e):
+            logger.warning(f"Date validation error: {str(e)}")
+            raise validation_exception("Некорректный диапазон дат. Конечная дата должна быть больше или равна начальной.")
         logger.error(f"Error getting production dynamics: {str(e)}")
         raise internal_server_exception()
