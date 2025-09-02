@@ -5,7 +5,7 @@ from datetime import date
 from decimal import Decimal
 from typing import Optional
 from backend.shared.base_schema import BaseCreateSchema, BaseUpdateSchema, BaseResponseSchema
-from backend.shared.enums import FluidTypeEnum
+from backend.shared.enums import FluidTypeEnum, UnitEnum
 
 
 class ProductionCreateSchema(BaseCreateSchema):
@@ -14,7 +14,7 @@ class ProductionCreateSchema(BaseCreateSchema):
     fluid_id: int
     date: date
     amount: Decimal
-    unit: str
+    unit: Optional[UnitEnum] = None  # Автоматически определяется по типу флюида
     fluid_type: FluidTypeEnum
     field_id: int
     development_object_id: int
@@ -23,7 +23,7 @@ class ProductionCreateSchema(BaseCreateSchema):
 class ProductionUpdateSchema(BaseUpdateSchema):
     """Схема для обновления записи добычи"""
     amount: Optional[Decimal] = None
-    unit: Optional[str] = None
+    unit: Optional[UnitEnum] = None
 
 
 class ProductionResponseSchema(BaseResponseSchema):
@@ -32,7 +32,7 @@ class ProductionResponseSchema(BaseResponseSchema):
     fluid_id: int
     date: date
     amount: Decimal
-    unit: str
+    unit: UnitEnum
     fluid_type: FluidTypeEnum
     field_id: int
     development_object_id: int

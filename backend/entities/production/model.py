@@ -7,7 +7,7 @@ from sqlalchemy import String, ForeignKey, Date, Numeric, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.shared.base_model import BaseModel
-from backend.shared.enums import FluidTypeEnum
+from backend.shared.enums import FluidTypeEnum, UnitEnum
 
 
 class Production(BaseModel):
@@ -20,7 +20,7 @@ class Production(BaseModel):
     fluid_id: Mapped[int] = mapped_column(ForeignKey("fluids.id"), nullable=False, index=True)
     date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
     amount: Mapped[Decimal] = mapped_column(Numeric(precision=15, scale=3), nullable=False)
-    unit: Mapped[str] = mapped_column(String(20), nullable=False)
+    unit: Mapped[UnitEnum] = mapped_column(SQLEnum(UnitEnum), nullable=False)
     fluid_type: Mapped[FluidTypeEnum] = mapped_column(
         SQLEnum(FluidTypeEnum), 
         nullable=False, 

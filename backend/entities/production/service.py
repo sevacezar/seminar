@@ -9,7 +9,7 @@ from sqlalchemy import select, and_, func
 
 from backend.shared.base_service import BaseService
 from backend.entities.production.model import Production
-from backend.shared.enums import FluidTypeEnum
+from backend.shared.enums import FluidTypeEnum, UnitEnum
 
 logger = logging.getLogger(__name__)
 

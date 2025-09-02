@@ -15,7 +15,6 @@ import { ruRU } from '@mui/material/locale';
 
 import FilterPanel, { FilterValues } from './components/FilterPanel';
 import ProductionChart from './components/ProductionChart';
-import StatisticsPanel from './components/StatisticsPanel';
 import { useProductionAnalytics } from './hooks/useProductionAnalytics';
 
 // Создание кастомной темы в корпоративных цветах Газпрома
@@ -116,8 +115,8 @@ const App: React.FC = () => {
       </AppBar>
 
       {/* Основной контент */}
-      <Container maxWidth="xl" sx={{ py: 4 }}>
-        <Box>
+      <Container maxWidth="xl" sx={{ py: 2, height: '100vh' }}>
+        <Box sx={{ height: '100%' }}>
           {/* Заголовок страницы */}
           <Typography variant="h4" gutterBottom sx={{ mb: 4, textAlign: 'center' }}>
             Динамика добычи по месторождениям
@@ -130,24 +129,26 @@ const App: React.FC = () => {
             </Alert>
           )}
 
-          {/* Панель фильтров */}
-          <FilterPanel
-            fields={fields}
-            onFiltersChange={handleFiltersChange}
-            loading={fieldsLoading || productionLoading}
-          />
-
-          {/* Панель статистики */}
-          {productionData && (
-            <StatisticsPanel data={productionData} />
-          )}
-
-          {/* График */}
-          <ProductionChart
-            data={productionData}
-            loading={productionLoading}
-            error={productionError || undefined}
-          />
+          {/* Основной контент с боковой панелью */}
+          <Box sx={{ display: 'flex', gap: 3, height: 'calc(100vh - 200px)' }}>
+            {/* Левая панель с фильтрами */}
+            <Box sx={{ width: '400px', flexShrink: 0 }}>
+              <FilterPanel
+                fields={fields}
+                onFiltersChange={handleFiltersChange}
+                loading={fieldsLoading || productionLoading}
+              />
+            </Box>
+            
+            {/* Правая панель с графиком */}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <ProductionChart
+                data={productionData}
+                loading={productionLoading}
+                error={productionError || undefined}
+              />
+            </Box>
+          </Box>
 
           {/* Информационная панель */}
           <Box sx={{ mt: 4, textAlign: 'center' }}>

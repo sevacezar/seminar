@@ -294,18 +294,17 @@ class DatabasePopulator:
                                 amount = self.calculate_monthly_production(well, fluid, days_in_month, year)
                                 
                                 if amount > 0:
-                                    unit = "тыс. м³" if fluid["fluid_type"] == "газ" else "т"
+                                    # Единицы измерения определяются автоматически в API
+                                    # unit = "м³" if fluid["fluid_type"] == "газ" else "т"
                                     
-                                    # Для газа переводим в тысячи м³
-                                    if fluid["fluid_type"] == "газ":
-                                        amount = amount / 1000
+                                    # Оставляем данные в базовых единицах (м³ для газа, т для нефти/конденсата)
                                     
                                     production = {
                                         "well_id": well["id"],
                                         "fluid_id": fluid["id"],
                                         "date": record_date.isoformat(),
                                         "amount": round(amount, 3),
-                                        "unit": unit,
+                                        # "unit" убираем - определяется автоматически
                                         "fluid_type": fluid["fluid_type"],
                                         "field_id": field_id,
                                         "development_object_id": dev_obj_id

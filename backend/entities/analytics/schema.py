@@ -4,7 +4,7 @@ Pydantic схемы для аналитических операций
 from datetime import datetime, date
 from typing import List, Optional
 from backend.shared.base_schema import BaseSchema
-from backend.shared.enums import SedimentComplexEnum, FluidTypeEnum, AggregationStepEnum
+from backend.shared.enums import SedimentComplexEnum, FluidTypeEnum, AggregationStepEnum, UnitEnum
 
 
 class ProductionDynamicsRequestSchema(BaseSchema):
@@ -31,7 +31,7 @@ class ProductionDynamicsMetadataResponse(BaseSchema):
     """Метаданные ответа"""
     total_fields: int
     total_periods: int
-    unit: str
+    unit: UnitEnum
     generated_at: datetime
 
 

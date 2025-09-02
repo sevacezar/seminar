@@ -117,85 +117,65 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ fields, onFiltersChange, load
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
-      <Paper elevation={2} sx={{ p: 3, mb: 3, backgroundColor: '#f8f9fa' }}>
-        <Typography variant="h6" gutterBottom color="primary" sx={{ fontWeight: 600 }}>
+      <Paper elevation={2} sx={{ p: 3, backgroundColor: '#f8f9fa', height: '100%', overflow: 'auto' }}>
+        <Typography variant="h6" gutterBottom color="primary" sx={{ fontWeight: 600, mb: 3 }}>
           Параметры анализа
         </Typography>
         
-        <Box sx={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: 3,
-          '& > *': { 
-            minWidth: '200px',
-            flex: '1 1 auto'
-          }
-        }}>
-          {/* Месторождения */}
-          <Box sx={{ flex: '1 1 300px' }}>
-            <FormControl fullWidth>
-              <InputLabel>Месторождения</InputLabel>
-              <Select
-                multiple
-                value={selectedFields}
-                onChange={handleFieldsChange}
-                input={<OutlinedInput label="Месторождения" />}
-                renderValue={(selected) => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map((value) => {
-                      const field = fields.find(f => f.id === value);
-                      return (
-                        <Chip
-                          key={value}
-                          label={field?.name || `ID: ${value}`}
-                          size="small"
-                          color="primary"
-                          variant="outlined"
-                        />
-                      );
-                    })}
-                  </Box>
-                )}
-                MenuProps={MenuProps}
-                disabled={loading}
-              >
-                {fields.map((field) => (
-                  <MenuItem key={field.id} value={field.id}>
-                    {field.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
+        {/* Первый столбец - Месторождения */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#003f7f' }}>
+            Месторождения
+          </Typography>
+          <FormControl fullWidth>
+            <InputLabel>Выберите месторождения</InputLabel>
+            <Select
+              multiple
+              value={selectedFields}
+              onChange={handleFieldsChange}
+              input={<OutlinedInput label="Выберите месторождения" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((value) => {
+                    const field = fields.find(f => f.id === value);
+                    return (
+                      <Chip
+                        key={value}
+                        label={field?.name || `ID: ${value}`}
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                      />
+                    );
+                  })}
+                </Box>
+              )}
+              MenuProps={MenuProps}
+              disabled={loading}
+            >
+              {fields.map((field) => (
+                <MenuItem key={field.id} value={field.id}>
+                  {field.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
 
-          {/* Тип флюида */}
-          <Box sx={{ flex: '1 1 200px' }}>
-            <FormControl fullWidth>
-              <InputLabel>Флюид</InputLabel>
-              <Select
-                value={fluidType}
-                onChange={(e) => setFluidType(e.target.value as FluidType)}
-                label="Флюид"
-                disabled={loading}
-              >
-                {fluidTypes.map((type) => (
-                  <MenuItem key={type.value} value={type.value}>
-                    {type.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-
+        {/* Второй столбец - Остальные параметры */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Комплексы отложений */}
-          <Box sx={{ flex: '1 1 300px' }}>
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, color: '#003f7f' }}>
+              Комплексы отложений
+            </Typography>
             <FormControl fullWidth>
-              <InputLabel>Комплексы отложений</InputLabel>
+              <InputLabel>Выберите комплексы</InputLabel>
               <Select
                 multiple
                 value={selectedComplexes}
                 onChange={handleComplexesChange}
-                input={<OutlinedInput label="Комплексы отложений" />}
+                input={<OutlinedInput label="Выберите комплексы" />}
                 renderValue={(selected) => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selected.map((value) => (
@@ -221,14 +201,39 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ fields, onFiltersChange, load
             </FormControl>
           </Box>
 
-          {/* Шаг агрегации */}
-          <Box sx={{ flex: '1 1 200px' }}>
+          {/* Тип флюида */}
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, color: '#003f7f' }}>
+              Тип флюида
+            </Typography>
             <FormControl fullWidth>
-              <InputLabel>Шаг построения</InputLabel>
+              <InputLabel>Выберите флюид</InputLabel>
+              <Select
+                value={fluidType}
+                onChange={(e) => setFluidType(e.target.value as FluidType)}
+                label="Выберите флюид"
+                disabled={loading}
+              >
+                {fluidTypes.map((type) => (
+                  <MenuItem key={type.value} value={type.value}>
+                    {type.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Шаг агрегации */}
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, color: '#003f7f' }}>
+              Шаг построения
+            </Typography>
+            <FormControl fullWidth>
+              <InputLabel>Выберите шаг</InputLabel>
               <Select
                 value={aggregationStep}
                 onChange={(e) => setAggregationStep(e.target.value as AggregationStep)}
-                label="Шаг построения"
+                label="Выберите шаг"
                 disabled={loading}
               >
                 {aggregationSteps.map((step) => (
@@ -240,47 +245,48 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ fields, onFiltersChange, load
             </FormControl>
           </Box>
 
-          {/* Дата начала */}
-          <Box sx={{ flex: '1 1 180px' }}>
-            <DatePicker
-              label="Дата начала"
-              value={dateFrom}
-              onChange={setDateFrom}
-              views={['year', 'month']}
-              format="MM/YYYY"
-              disabled={loading}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: dateFrom && dateTo ? !isValidDateRange(
-                    formatDateForApi(dateFrom.year(), dateFrom.month() + 1),
-                    formatDateForApi(dateTo.year(), dateTo.month() + 1)
-                  ) : false
-                }
-              }}
-            />
-          </Box>
-
-          {/* Дата окончания */}
-          <Box sx={{ flex: '1 1 180px' }}>
-            <DatePicker
-              label="Дата окончания"
-              value={dateTo}
-              onChange={setDateTo}
-              views={['year', 'month']}
-              format="MM/YYYY"
-              disabled={loading}
-              minDate={dateFrom || undefined}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: dateFrom && dateTo ? !isValidDateRange(
-                    formatDateForApi(dateFrom.year(), dateFrom.month() + 1),
-                    formatDateForApi(dateTo.year(), dateTo.month() + 1)
-                  ) : false
-                }
-              }}
-            />
+          {/* Даты */}
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, color: '#003f7f' }}>
+              Период анализа
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <DatePicker
+                label="Дата начала"
+                value={dateFrom}
+                onChange={setDateFrom}
+                views={['year', 'month']}
+                format="MM/YYYY"
+                disabled={loading}
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    error: dateFrom && dateTo ? !isValidDateRange(
+                      formatDateForApi(dateFrom.year(), dateFrom.month() + 1),
+                      formatDateForApi(dateTo.year(), dateTo.month() + 1)
+                    ) : false
+                  }
+                }}
+              />
+              <DatePicker
+                label="Дата окончания"
+                value={dateTo}
+                onChange={setDateTo}
+                views={['year', 'month']}
+                format="MM/YYYY"
+                disabled={loading}
+                minDate={dateFrom || undefined}
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    error: dateFrom && dateTo ? !isValidDateRange(
+                      formatDateForApi(dateFrom.year(), dateFrom.month() + 1),
+                      formatDateForApi(dateTo.year(), dateTo.month() + 1)
+                    ) : false
+                  }
+                }}
+              />
+            </Box>
           </Box>
         </Box>
 

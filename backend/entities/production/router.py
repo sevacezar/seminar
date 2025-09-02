@@ -15,7 +15,7 @@ from backend.entities.production.schema import (
     ProductionUpdateSchema,
     ProductionResponseSchema
 )
-from backend.shared.enums import FluidTypeEnum
+from backend.shared.enums import FluidTypeEnum, UnitEnum
 from backend.core.exceptions import (
     NotFoundError,
     ValidationError,
@@ -42,7 +42,14 @@ async def create_production_record(
 ) -> ProductionResponseSchema:
     """Создание новой записи добычи"""
     try:
-        production = await production_service.create(db, production_data.model_dump())
+        # Автоматически определяем единицу измерения если не указана
+        data_dict = production_data.model_dump()
+        if 'unit' not in data_dict or data_dict['unit'] is None:
+            fluid_type = data_dict.get('fluid_type')
+            if fluid_type:
+                data_dict['unit'] = UnitEnum.get_default_unit(fluid_type)
+        
+        production = await production_service.create(db, data_dict)
         return ProductionResponseSchema.model_validate(production)
     except ValidationError as e:
         raise validation_exception(str(e))
@@ -187,7 +194,16 @@ async def bulk_create_production_records(
     start_time = time.time()
     
     try:
-        records_data_dict = [record.model_dump() for record in records_data]
+        records_data_dict = []
+        for record in records_data:
+            data_dict = record.model_dump()
+            # Автоматически определяем единицу измерения если не указана
+            if 'unit' not in data_dict or data_dict['unit'] is None:
+                fluid_type = data_dict.get('fluid_type')
+                if fluid_type:
+                    data_dict['unit'] = UnitEnum.get_default_unit(fluid_type)
+            records_data_dict.append(data_dict)
+            
         created_records = await production_service.bulk_create(db, records_data_dict)
         
         processing_time = int((time.time() - start_time) * 1000)

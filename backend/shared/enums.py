@@ -36,6 +36,26 @@ class FluidTypeEnum(str, Enum):
         return [item.value for item in cls]
 
 
+class UnitEnum(str, Enum):
+    """Перечисление единиц измерения"""
+    
+    CUBIC_METERS = "м3"
+    TONS = "т"
+    
+    @classmethod
+    def get_values(cls):
+        """Получить все возможные значения"""
+        return [item.value for item in cls]
+    
+    @classmethod
+    def get_default_unit(cls, fluid_type: 'FluidTypeEnum') -> 'UnitEnum':
+        """Получить единицу измерения по умолчанию для типа флюида"""
+        if fluid_type == FluidTypeEnum.GAS:
+            return cls.CUBIC_METERS
+        else:  # нефть и конденсат
+            return cls.TONS
+
+
 class AggregationStepEnum(str, Enum):
     """Перечисление шагов агрегации для аналитики"""
     

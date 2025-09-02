@@ -4,7 +4,7 @@ FastAPI роутер для получения информации о дост�
 from typing import List, Dict
 from fastapi import APIRouter
 
-from backend.shared.enums import SedimentComplexEnum, FluidTypeEnum, AggregationStepEnum
+from backend.shared.enums import SedimentComplexEnum, FluidTypeEnum, AggregationStepEnum, UnitEnum
 
 router = APIRouter(prefix="/enums", tags=["enums"])
 
@@ -40,6 +40,16 @@ async def get_aggregation_steps() -> List[str]:
 
 
 @router.get(
+    "/units",
+    response_model=List[str],
+    summary="Получить список единиц измерения"
+)
+async def get_units() -> List[str]:
+    """Получение списка доступных единиц измерения"""
+    return UnitEnum.get_values()
+
+
+@router.get(
     "/all",
     response_model=Dict[str, List[str]],
     summary="Получить все доступные enum значения"
@@ -49,5 +59,6 @@ async def get_all_enums() -> Dict[str, List[str]]:
     return {
         "sediment_complexes": SedimentComplexEnum.get_values(),
         "fluid_types": FluidTypeEnum.get_values(),
-        "aggregation_steps": AggregationStepEnum.get_values()
+        "aggregation_steps": AggregationStepEnum.get_values(),
+        "units": UnitEnum.get_values()
     }

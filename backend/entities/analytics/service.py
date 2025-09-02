@@ -18,7 +18,7 @@ from backend.entities.analytics.schema import (
     FieldProductionData,
     TotalProductionData
 )
-from backend.shared.enums import SedimentComplexEnum, FluidTypeEnum, AggregationStepEnum
+from backend.shared.enums import SedimentComplexEnum, FluidTypeEnum, AggregationStepEnum, UnitEnum
 
 logger = logging.getLogger(__name__)
 
@@ -164,7 +164,7 @@ class AnalyticsService:
             total_production = [total_by_period.get(period, 0.0) for period in sorted_periods]
             
             # Определение единицы измерения
-            unit = "тыс. м³" if fluid_type == FluidTypeEnum.GAS else "т"
+            unit = UnitEnum.get_default_unit(fluid_type)
             
             # Формирование метаданных
             metadata = ProductionDynamicsMetadata(

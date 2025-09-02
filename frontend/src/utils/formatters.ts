@@ -1,6 +1,7 @@
 // Утилиты для форматирования данных
 
 import { CHART_COLORS } from './constants';
+import { Unit } from '../types/api';
 
 export interface FormattedNumber {
   value: number;
@@ -9,25 +10,26 @@ export interface FormattedNumber {
 }
 
 // Форматирование больших чисел для оси Y
-export function formatLargeNumber(value: number, unit: string): FormattedNumber {
+export function formatLargeNumber(value: number, unit: Unit): FormattedNumber {
   const absValue = Math.abs(value);
+  const isMeters = unit === Unit.CUBIC_METERS;
   
   if (absValue >= 1000000000) {
     return {
       value: Number((value / 1000000000).toFixed(1)),
-      unit: unit.includes('м³') ? 'млрд. м³' : 'млрд. т',
+      unit: isMeters ? 'млрд. м³' : 'млрд. т',
       suffix: 'млрд.'
     };
   } else if (absValue >= 1000000) {
     return {
       value: Number((value / 1000000).toFixed(1)),
-      unit: unit.includes('м³') ? 'млн. м³' : 'млн. т',
+      unit: isMeters ? 'млн. м³' : 'млн. т',
       suffix: 'млн.'
     };
   } else if (absValue >= 1000) {
     return {
       value: Number((value / 1000).toFixed(1)),
-      unit: unit.includes('м³') ? 'тыс. м³' : 'тыс. т',
+      unit: isMeters ? 'тыс. м³' : 'тыс. т',
       suffix: 'тыс.'
     };
   }
@@ -40,7 +42,7 @@ export function formatLargeNumber(value: number, unit: string): FormattedNumber 
 }
 
 // Форматирование значений для отображения на графике
-export function formatValueForDisplay(value: number, unit: string): string {
+export function formatValueForDisplay(value: number, unit: Unit): string {
   const formatted = formatLargeNumber(value, unit);
   return `${formatted.value} ${formatted.suffix}`.trim();
 }

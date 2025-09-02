@@ -1,20 +1,84 @@
 version: '3.8'
 
 services:
+  # База данных PostgreSQL
   postgres:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: prod_analysis_postgres
     restart: unless-stopped
     env_file:
       - ../.env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - prod_analysis_network
+
+  # Бэкенд FastAPI
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: prod_analysis_backend
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      - PYTHONPATH=/app
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../backend:/app/backend
+      - ../main.py:/app/main.py
+      - ../requirements.txt:/app/requirements.txt
+    depends_on:
+      - postgres
+    networks:
+      - prod_analysis_network
+
+  # Фронтенд React
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: prod_analysis_frontend
+    restart: unless-stopped
+    env_file:
+      - ../frontend/.env
+    environment:
+      - REACT_APP_API_URL=http://backend:8000/api/v1
+      - GENERATE_SOURCEMAP=false
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../frontend/src:/app/src
+      - ../frontend/public:/app/public
+      - ../frontend/package.json:/app/package.json
+      - ../frontend/package-lock.json:/app/package-lock.json
+      - ../frontend/tsconfig.json:/app/tsconfig.json
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
+    networks:
+      - prod_analysis_network
+
+networks:
+  prod_analysis_network:
+    driver: bridge
 
 volumes:
   postgres_data:
+    driver: local

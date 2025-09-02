@@ -33,6 +33,11 @@ export enum AggregationStep {
   YEARLY = 'год'
 }
 
+export enum Unit {
+  CUBIC_METERS = 'м3',
+  TONS = 'т'
+}
+
 // Аналитика
 export interface ProductionDynamicsRequest {
   date_from: string; // YYYY-MM-DD
@@ -65,7 +70,7 @@ export interface ProductionDynamicsMetadataRequest {
 export interface ProductionDynamicsMetadataResponse {
   total_fields: number;
   total_periods: number;
-  unit: string;
+  unit: Unit;
   generated_at: string;
 }
 
