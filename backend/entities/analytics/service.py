@@ -56,7 +56,7 @@ class AnalyticsService:
                 and_(
                     Production.date >= date_from,
                     Production.date <= date_to,
-                    Production.fluid_type == fluid_type
+                    Production.fluid_type == fluid_type.value
                 )
             )
             
