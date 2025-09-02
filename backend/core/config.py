@@ -19,7 +19,7 @@ class Settings:
     DB_USERNAME: str = os.getenv("DB_USERNAME")
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")
     DB_NAME: str = os.getenv("DB_NAME", "postgres")
-    DB_HOST: str = os.getenv("DB_HOST", "5432")
+    DB_HOST: str = os.getenv("DB_HOST", "localhost")
     DB_PORT: str = os.getenv("DB_PORT", "5432")
     
     DATABASE_URL: str = (
@@ -45,7 +45,7 @@ class Settings:
                 missing_vars.append(var)
 
         if missing_vars:
-            raise ValueError(f"Missing variables: {", ".join(missing_vars)}")
+            raise ValueError(f"Missing variables: {', '.join(missing_vars)}")
 
 
 # Глобальный экземпляр настроек
